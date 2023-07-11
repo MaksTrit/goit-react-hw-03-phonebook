@@ -1,21 +1,29 @@
 import { Component } from 'react';
 import { GlobalStyle } from './GlobalStyle';
 import { Layout } from './Layout';
-import { nanoid } from 'nanoid';
+
 import { ContactForm } from './ContactForm/ContactForm';
 import { ContactsList } from './ContactsList/ContactsList';
 import { Filter } from './Filter/Filter';
 
 export class App extends Component {
   state = {
-    contacts: [
-      { id: nanoid(), name: 'Rosie Simpson', number: '459-12-56' },
-      { id: nanoid(), name: 'Hermione Kline', number: '443-89-12' },
-      { id: nanoid(), name: 'Eden Clements', number: '645-17-79' },
-      { id: nanoid(), name: 'Annie Copeland', number: '227-91-26' },
-    ],
+    contacts: [],
     filter: '',
   };
+
+  componentDidMount() {
+    if (localStorage.getItem('contacts')) {
+      const parsedContacts = JSON.parse(localStorage.getItem('contacts'));
+      this.setState({ contacts: parsedContacts });
+    }
+  }
+
+  componentDidUpdate(_, prevState) {
+    if (this.state.contacts.length !== prevState.contacts.length) {
+      localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
+    }
+  }
 
   handleChange = evt => {
     const { name, value } = evt.target;
@@ -56,7 +64,11 @@ export class App extends Component {
         <GlobalStyle />
         <ContactForm onSubmit={this.addContact} />
         <Filter onChange={this.handleChange} value={filter} />
-        <ContactsList contacts={contactsList} onDelete={this.deleteContact} />
+        {this.state.contacts.length ? (
+          <ContactsList contacts={contactsList} onDelete={this.deleteContact} />
+        ) : (
+          <h3>There is no one contact</h3>
+        )}
       </Layout>
     );
   }
