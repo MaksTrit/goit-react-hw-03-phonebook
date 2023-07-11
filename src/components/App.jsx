@@ -53,7 +53,9 @@ export class App extends Component {
     const searchedContacts = contacts.filter(({ name }) =>
       name.toLowerCase().includes(searchName)
     );
-    return searchedContacts.sort((a, b) => a.name.localeCompare(b.name));
+    return searchedContacts.sort((prevContact, nextContact) =>
+      prevContact.name.localeCompare(nextContact.name)
+    );
   };
 
   render() {
